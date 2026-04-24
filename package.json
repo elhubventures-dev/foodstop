@@ -1,0 +1,13 @@
+{
+  "name": "chopfast-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "dependencies": {
+    "motion-utils": "^12.36.0",
+    "zustand": "^5.0.12"
+  }
+}
