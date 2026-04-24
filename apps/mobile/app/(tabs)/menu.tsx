@@ -3,7 +3,7 @@ import { Theme } from '@/constants/Theme';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { FoodCard } from '@/components/menu/FoodCard';
-import { Collapsible } from '@/components/Collapsible';
+import { Collapsible } from '@/components/ui/Collapsible';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 
 import { useEffect, useState, useMemo } from 'react';
@@ -162,3 +162,4 @@ const styles = StyleSheet.create({
     paddingVertical: 60,
   }
 });
+
