@@ -116,7 +116,7 @@ export default function AdminOrders() {
                   <td style={{ fontSize: '0.75rem' }}>
                     {new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </td>
-                  <td>₦{Number(order.total_amount).toLocaleString()}</td>
+                  <td>₦{Number(order.total).toLocaleString()}</td>
                   <td>
                     <span className={`status-pill status-${order.status}`}>
                       {order.status.charAt(0).toUpperCase() + order.status.slice(1).replace('_', ' ')}

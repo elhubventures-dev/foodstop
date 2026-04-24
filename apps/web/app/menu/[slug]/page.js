@@ -38,7 +38,13 @@ export default function ProductDetailPage() {
           }
           throw error;
         }
-        setItem(data);
+        
+        // Normalize the item for consistency with mock data
+        const normalizedItem = {
+          ...data,
+          category_slug: data.categories?.slug || data.category_slug
+        };
+        setItem(normalizedItem);
       } catch (err) {
         console.error('Error fetching item:', err);
         toast.error('Item not found');

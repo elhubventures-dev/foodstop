@@ -1,51 +1,103 @@
-'use client';
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePaystackPayment } from 'react-paystack';
 import { useRouter } from 'next/navigation';
-
-import { useCartStore } from '@chopfast/shared';
+import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
+import { toast } from 'react-hot-toast';
 
 export default function CheckoutForm() {
   const router = useRouter();
-  const { items, getTotal, clearCart } = useCartStore();
+  const { cart, clearCart } = useCart();
+  const { user, profile } = useAuth();
   
-  const [email, setEmail] = useState('customer@example.com');
-  const [address, setAddress] = useState('12 Wuse 2 Road, Abuja');
-  const [name, setName] = useState('John Doe');
+  const [email, setEmail] = useState('');
+  const [address, setAddress] = useState('');
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Prefill user data if available
+  useEffect(() => {
+    if (user) setEmail(user.email || '');
+    if (profile) {
+      setName(profile.full_name || '');
+      setPhone(profile.phone || '');
+    }
+  }, [user, profile]);
   
-  const subtotal = getTotal();
-  const deliveryFee = 1500;
-  const total = subtotal + deliveryFee;
+  const subtotal = cart.subtotal || 0;
+  const deliveryFee = cart.deliveryFee || 0;
+  const total = cart.total || 0;
 
   const config = {
-    reference: (new Date()).getTime().toString(),
+    reference: `PAY-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
     email: email,
-    amount: total * 100, // Paystack expects amount in kobo
-    publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || 'pk_test_placeholder',
+    amount: Math.round(total * 100), // Paystack expects amount in kobo
+    publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '',
     currency: 'NGN',
   };
 
   const initializePayment = usePaystackPayment(config);
 
+  const createOrder = async (paystackReference) => {
+    setIsSubmitting(true);
+    try {
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: cart.items,
+          subtotal,
+          deliveryFee,
+          tax: cart.tax || 0,
+          discount: cart.discount || 0,
+          total,
+          address,
+          phoneNumber: phone,
+          email,
+          userId: user?.id,
+          paystackReference
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create order');
+      }
+
+      const result = await response.json();
+      clearCart();
+      toast.success('Order placed successfully!');
+      router.push(`/order-confirmation?id=${result.orderId}`);
+    } catch (error) {
+      console.error('Checkout error:', error);
+      toast.error(error.message || 'Something went wrong while placing your order.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const onSuccess = (reference) => {
     console.log('Payment successful. Reference:', reference);
-    // In a real app, send this reference to the backend/Supabase to verify and create the order
-    clearCart();
-    alert('Payment Successful! Your order has been placed.');
-    router.push('/order-confirmation');
+    createOrder(reference.reference);
   };
 
   const onClose = () => {
-    console.log('Payment closed');
+    toast('Payment cancelled', { icon: 'ℹ️' });
   };
 
   const handleCheckout = (e) => {
     e.preventDefault();
-    if (!email || !address || !name) {
-      alert('Please fill out all delivery details');
+    if (!email || !address || !name || !phone) {
+      toast.error('Please fill out all delivery details');
       return;
     }
+    
+    if (cart.items.length === 0) {
+      toast.error('Your cart is empty');
+      return;
+    }
+
     initializePayment(onSuccess, onClose);
   };
 
@@ -62,17 +114,32 @@ export default function CheckoutForm() {
               onChange={(e) => setName(e.target.value)}
               className="form-input" 
               style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--color-border)' }} 
+              placeholder="Your full name"
             />
           </div>
-          <div style={{ marginBottom: '1.5rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Email Address</label>
-            <input 
-              type="email" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="form-input" 
-              style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--color-border)' }} 
-            />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Email Address</label>
+              <input 
+                type="email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="form-input" 
+                style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--color-border)' }} 
+                placeholder="email@example.com"
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Phone Number</label>
+              <input 
+                type="tel" 
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="form-input" 
+                style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--color-border)' }} 
+                placeholder="+234..."
+              />
+            </div>
           </div>
           <div style={{ marginBottom: '1.5rem' }}>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Delivery Address</label>
@@ -81,10 +148,16 @@ export default function CheckoutForm() {
               onChange={(e) => setAddress(e.target.value)}
               className="form-input" 
               style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--color-border)', minHeight: '100px' }} 
+              placeholder="Enter your full delivery address"
             />
           </div>
-          <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '1rem', fontSize: '1.125rem' }}>
-            Proceed to Payment (₦{total.toLocaleString()})
+          <button 
+            type="submit" 
+            className="btn btn-primary" 
+            style={{ width: '100%', padding: '1rem', fontSize: '1.125rem', opacity: isSubmitting ? 0.7 : 1 }}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Processing...' : `Proceed to Payment (₦${total.toLocaleString()})`}
           </button>
         </form>
       </div>
@@ -94,12 +167,17 @@ export default function CheckoutForm() {
           <h2 style={{ fontSize: '1.25rem', marginBottom: '1.5rem', fontWeight: 'bold' }}>Order Summary</h2>
           
           <div style={{ marginBottom: '1.5rem' }}>
-            {items.map((item) => (
-              <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                <div>
+            {cart.items.map((item, idx) => (
+              <div key={`${item.id}-${idx}`} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                <div style={{ flex: 1, paddingRight: '1rem' }}>
                   <span style={{ fontWeight: '600' }}>{item.quantity}x</span> {item.name}
+                  {item.modifiers && Object.keys(item.modifiers).length > 0 && (
+                    <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
+                      {Object.values(item.modifiers).join(', ')}
+                    </div>
+                  )}
                 </div>
-                <div style={{ fontWeight: '600' }}>₦{(item.price * item.quantity).toLocaleString()}</div>
+                <div style={{ fontWeight: '600' }}>₦{item.subtotal.toLocaleString()}</div>
               </div>
             ))}
           </div>

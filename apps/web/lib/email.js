@@ -95,7 +95,7 @@ export function generateOrderConfirmationTemplate(order) {
               </tr>
               <tr>
                 <td style="padding-top: 16px; border-top: 2px solid #f1f5f9; font-size: 18px; font-weight: 800; color: #1e293b;">Total</td>
-                <td style="padding-top: 16px; border-top: 2px solid #f1f5f9; text-align: right; font-size: 18px; font-weight: 800; color: #ef4444;">₦${Number(order.total_amount).toLocaleString()}</td>
+                <td style="padding-top: 16px; border-top: 2px solid #f1f5f9; text-align: right; font-size: 18px; font-weight: 800; color: #ef4444;">₦${Number(order.total).toLocaleString()}</td>
               </tr>
             </tfoot>
           </table>
@@ -144,7 +144,7 @@ export function generateAdminNotificationTemplate(order) {
         <div style="background-color: #fff7ed; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
           <p style="margin: 0; color: #9a3412; font-size: 14px;">
             <strong>Customer:</strong> ${order.profiles?.full_name || 'Guest'}<br>
-            <strong>Total:</strong> ₦${Number(order.total_amount).toLocaleString()}<br>
+            <strong>Total:</strong> ₦${Number(order.total).toLocaleString()}<br>
             <strong>Payment:</strong> ${order.payment_channel || 'Confirmed'}
           </p>
         </div>
