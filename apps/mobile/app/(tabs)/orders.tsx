@@ -83,11 +83,6 @@ export default function OrdersScreen() {
         </View>
       )}
 
-           </View>
-           <ThemedText style={styles.itemCount}>{order.item_count || 1} items</ThemedText>
-        </View>
-      )}
-
       <View style={styles.orderFooter}>
         <View>
           <ThemedText style={styles.totalLabel}>Total Paid</ThemedText>
@@ -300,10 +295,10 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: 'var(--color-primary)',
+    borderColor: Theme.colors.primary,
   },
   rateBtnText: {
-    color: 'var(--color-primary)',
+    color: Theme.colors.primary,
     fontSize: 13,
     fontWeight: '700',
   },
