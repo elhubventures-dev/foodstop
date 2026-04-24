@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, ScrollView, TouchableOpacity, Alert, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Paystack } from 'react-native-paystack-webview';
@@ -13,7 +13,6 @@ import { useCartStore } from '@chopfast/shared';
 export default function CartScreen() {
   const router = useRouter();
   const [paystackVisible, setPaystackVisible] = useState(false);
-  const [distance, setDistance] = useState(5.2); // Mock distance in km
   const [distance, setDistance] = useState(5.2); // Mock distance in km
   const [promoCode, setPromoCode] = useState('');
   const [discount, setDiscount] = useState(0);
