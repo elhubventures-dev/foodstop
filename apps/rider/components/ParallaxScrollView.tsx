@@ -7,7 +7,7 @@ import Animated, {
   useScrollOffset,
 } from 'react-native-reanimated';
 
-import { ThemedView } from '@/components/themed-view';
+import { ThemedView } from '@/components/ThemedView';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
@@ -77,4 +77,5 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
 });
+
 

@@ -1,10 +1,14 @@
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, View, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
+import { HelloWave } from '@/components/HelloWave';
+import ParallaxScrollView from '@/components/ParallaxScrollView';
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
+import { IconSymbol } from '@/components/ui/IconSymbol';
+import { Theme } from '@/constants/Theme';
+import { useCartStore } from '@chopfast/shared';
 import { Link } from 'expo-router';
 
 export default function HomeScreen() {
@@ -12,8 +16,23 @@ export default function HomeScreen() {
   const [selectedBranch, setSelectedBranch] = useState('Ikeja Branch');
   const [showBranchPicker, setShowBranchPicker] = useState(false);
   
-  const { items, categories, loading } = useMenu();
   const { addItem } = useCartStore();
+  const [items, setItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMenu = async () => {
+      const { data } = await supabase
+        .from('menu_items')
+        .select('*')
+        .eq('is_available', true);
+      
+      if (data) setItems(data);
+      setLoading(false);
+    };
+
+    fetchMenu();
+  }, []);
 
   const filteredItems = selectedCategory 
     ? items.filter(item => item.category_id === selectedCategory)
@@ -169,4 +188,5 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
 });
+
 
