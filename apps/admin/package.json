@@ -9,11 +9,12 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@chopfast/ui": "*",
     "@chopfast/shared": "*",
+    "@chopfast/ui": "*",
     "@supabase/supabase-js": "^2.99.3",
-    "lucide-react": "^0.577.0",
+    "@swc/helpers": "^0.5.21",
     "framer-motion": "^12.38.0",
+    "lucide-react": "^0.577.0",
     "next": "16.2.4",
     "react": "19.2.4",
     "react-dom": "19.2.4",

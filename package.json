@@ -9,12 +9,14 @@
   "scripts": {
     "dev": "npm run dev --workspace=@chopfast/web",
     "dev:api": "npm run start:dev --workspace=@chopfast/api",
-    "build": "npm run build --workspace=@chopfast/web",
-    "start": "npm run start --workspace=@chopfast/web",
+    "build": "npm run build --workspace=@chopfast/admin",
+    "start": "npm run start --workspace=@chopfast/admin",
     "lint": "npm run lint --workspace=@chopfast/web"
   },
   "dependencies": {
+    "@swc/helpers": "^0.5.15",
     "motion-utils": "^12.36.0",
+    "next": "16.2.4",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-hot-toast": "2.6.0",
