@@ -1,4 +1,9 @@
 import type { NextConfig } from "next";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const monorepoRoot = path.resolve(__dirname, "../..");
 
 const nextConfig: NextConfig = {
   transpilePackages: ["@chopfast/shared", "@chopfast/ui"],
@@ -14,6 +19,10 @@ const nextConfig: NextConfig = {
       "socket.io-client": "../../node_modules/socket.io-client",
       "@supabase/supabase-js": "../../node_modules/@supabase/supabase-js",
     },
+  },
+  webpack: (config) => {
+    config.resolve.modules.push(path.resolve(monorepoRoot, "node_modules"));
+    return config;
   },
 };
 
