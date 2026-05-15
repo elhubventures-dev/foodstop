@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import Link from 'next/link';
 import { 
   ShieldCheck, 
   Store, 
@@ -7,10 +8,15 @@ import {
   Activity, 
   DollarSign, 
   Settings, 
-  ArrowUpRight,
   Server,
   Globe,
-  AlertTriangle
+  AlertTriangle,
+  ClipboardList,
+  PieChart,
+  Landmark,
+  Banknote,
+  Megaphone,
+  Sprout,
 } from 'lucide-react';
 
 export default function SuperAdminDashboard() {
@@ -40,7 +46,115 @@ export default function SuperAdminDashboard() {
               <p style={{ color: '#64748b', fontWeight: '500' }}>Global Platform Governance & Control</p>
            </div>
         </div>
-        <div style={{ display: 'flex', gap: '1rem' }}>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+           <Link
+             href="/super/merchant-applications"
+             style={{
+               display: 'inline-flex',
+               alignItems: 'center',
+               gap: 8,
+               backgroundColor: 'white',
+               border: '1px solid #e2e8f0',
+               padding: '0.75rem 1.5rem',
+               borderRadius: '12px',
+               fontWeight: '600',
+               color: '#0f172a',
+               textDecoration: 'none',
+             }}
+           >
+             <ClipboardList size={18} />
+             Merchant applications
+           </Link>
+           <Link
+             href="/super/financials"
+             style={{
+               display: 'inline-flex',
+               alignItems: 'center',
+               gap: 8,
+               backgroundColor: 'white',
+               border: '1px solid #e2e8f0',
+               padding: '0.75rem 1.5rem',
+               borderRadius: '12px',
+               fontWeight: '600',
+               color: '#0f172a',
+               textDecoration: 'none',
+             }}
+           >
+             <PieChart size={18} />
+             Platform financials
+           </Link>
+           <Link
+             href="/super/payouts"
+             style={{
+               display: 'inline-flex',
+               alignItems: 'center',
+               gap: 8,
+               backgroundColor: 'white',
+               border: '1px solid #e2e8f0',
+               padding: '0.75rem 1.5rem',
+               borderRadius: '12px',
+               fontWeight: '600',
+               color: '#0f172a',
+               textDecoration: 'none',
+             }}
+           >
+             <Banknote size={18} />
+             Payout approvals
+           </Link>
+           <Link
+             href="/super/merchants"
+             style={{
+               display: 'inline-flex',
+               alignItems: 'center',
+               gap: 8,
+               backgroundColor: 'white',
+               border: '1px solid #e2e8f0',
+               padding: '0.75rem 1.5rem',
+               borderRadius: '12px',
+               fontWeight: '600',
+               color: '#0f172a',
+               textDecoration: 'none',
+             }}
+           >
+             <Landmark size={18} />
+             Merchants
+           </Link>
+           <Link
+             href="/super/broadcasts"
+             style={{
+               display: 'inline-flex',
+               alignItems: 'center',
+               gap: 8,
+               backgroundColor: 'white',
+               border: '1px solid #e2e8f0',
+               padding: '0.75rem 1.5rem',
+               borderRadius: '12px',
+               fontWeight: '600',
+               color: '#0f172a',
+               textDecoration: 'none',
+             }}
+           >
+             <Megaphone size={18} />
+             Broadcasts
+           </Link>
+           <Link
+             href="/super/growth-safety"
+             style={{
+               display: 'inline-flex',
+               alignItems: 'center',
+               gap: 8,
+               backgroundColor: 'white',
+               border: '1px solid #e2e8f0',
+               padding: '0.75rem 1.5rem',
+               borderRadius: '12px',
+               fontWeight: '600',
+               color: '#0f172a',
+               textDecoration: 'none',
+             }}
+           >
+             <Sprout size={18} />
+             Growth &amp; safety
+           </Link>
            <button style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', padding: '0.75rem 1.5rem', borderRadius: '12px', fontWeight: '600', cursor: 'pointer' }}>System Logs</button>
            <button style={{ backgroundColor: 'black', color: 'white', border: 'none', padding: '0.75rem 1.5rem', borderRadius: '12px', fontWeight: '600', cursor: 'pointer' }}>Network Config</button>
         </div>
@@ -143,9 +257,9 @@ export default function SuperAdminDashboard() {
                <p style={{ fontSize: '0.875rem', color: '#9a3412', lineHeight: '1.5' }}>
                   New Merchant Application from **Abuja Central (Wuse II)** requires technical vetting and KYC approval.
                </p>
-               <button style={{ marginTop: '1rem', color: '#ea580c', fontWeight: '700', fontSize: '0.875rem', textDecoration: 'underline' }}>
-                  Review Application
-               </button>
+               <Link href="/super/merchant-applications" style={{ marginTop: '1rem', display: 'inline-block', color: '#ea580c', fontWeight: '700', fontSize: '0.875rem', textDecoration: 'underline' }}>
+                  Review applications
+               </Link>
             </div>
          </div>
       </div>

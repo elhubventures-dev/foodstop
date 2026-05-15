@@ -30,20 +30,26 @@ export default function MenuPage() {
           
         const { data: menuItems, error: itemsError } = await supabase
           .from('menu_items')
-          .select('*, categories(name, slug)')
+          .select('*, categories(name, slug), merchants(id, business_name)')
           .eq('is_available', true)
           .order('display_order');
-          
+
         if (cats && cats.length > 0 && !catsError) {
           setCategories(cats);
         }
-        
+
         if (menuItems && menuItems.length > 0 && !itemsError) {
-          // Normalize the category_slug for filtering
-          const normalizedItems = menuItems.map(item => ({
-            ...item,
-            category_slug: item.categories?.slug
-          }));
+          const normalizedItems = menuItems.map((row) => {
+            const m = row.merchants;
+            const merchant = Array.isArray(m) ? m[0] : m;
+            const { merchants: _omitMerch, categories, ...rest } = row;
+            return {
+              ...rest,
+              category_slug: categories?.slug,
+              merchant_id: row.merchant_id || merchant?.id || undefined,
+              merchant_name: merchant?.business_name || undefined,
+            };
+          });
           setItems(normalizedItems);
         }
       } catch (err) {

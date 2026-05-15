@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, UtensilsCrossed, MapPin, ShoppingBag, User } from 'lucide-react';
+import { Home, UtensilsCrossed, Store, ShoppingBag, User } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import './MobileNav.css';
 
@@ -13,8 +13,8 @@ export default function MobileNav() {
 
   const navItems = [
     { href: '/', label: 'Home', icon: Home },
+    { href: '/restaurants', label: 'Explore', icon: Store },
     { href: '/menu', label: 'Menu', icon: UtensilsCrossed },
-    { href: '/contact', label: 'Find Us', icon: MapPin },
     { href: '/account', label: 'Account', icon: User },
   ];
 

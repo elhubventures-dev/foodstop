@@ -608,3 +608,83 @@
   font-size: var(--text-sm);
   font-weight: 700;
 }
+
+/* Multi-vendor homepage rows */
+.multi-vendor-section {
+  padding: var(--space-12) 0;
+}
+
+.home-multi-scroll {
+  display: flex;
+  gap: var(--space-4);
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.home-multi-card-wrap {
+  flex: 0 0 min(280px, 85vw);
+  scroll-snap-align: start;
+}
+
+.home-multi-card-wrap .restaurant-card {
+  height: 100%;
+}
+
+.home-popular-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-4);
+}
+
+.home-popular-card {
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.home-popular-img-wrap {
+  height: 120px;
+  background: var(--color-bg-secondary);
+}
+
+.home-popular-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.home-popular-img--empty {
+  background: linear-gradient(135deg, #e2e8f0, #f8fafc);
+}
+
+.home-popular-body {
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.home-popular-body h3 {
+  font-size: var(--text-base);
+  font-weight: 700;
+}
+
+.home-popular-merchant {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.home-popular-merchant:hover {
+  text-decoration: underline;
+}
+
+.home-popular-price {
+  font-weight: 700;
+  margin: 0.25rem 0 0.5rem;
+}

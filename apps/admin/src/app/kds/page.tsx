@@ -8,7 +8,7 @@ import {
   ChefHat,
   ChevronRight
 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@chopfast/shared';
 
 export default function KDSPage() {
   const [orders, setOrders] = useState<any[]>([]);

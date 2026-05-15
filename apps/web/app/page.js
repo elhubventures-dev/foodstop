@@ -4,6 +4,8 @@ import Image from 'next/image';
 import { ArrowRight, MapPin, Clock, Award, Zap, Smartphone, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import './home.css';
+import MultiVendorHomeSections from '@/components/home/MultiVendorHomeSections';
+import FlashSaleBanner from '@/components/home/FlashSaleBanner';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -28,6 +30,7 @@ const itemVariants = {
 export default function Home() {
   return (
     <div className="home-page">
+      <FlashSaleBanner />
       {/* Hero Section */}
       <section className="hero">
         <div className="hero-background"></div>
@@ -50,7 +53,7 @@ export default function Home() {
             <h1 className="hero-title">Experience the true taste of home.</h1>
             <p className="hero-subtitle">Premium authentic Nigerian dishes delivered fresh and hot to your doorstep.</p>
             <div className="hero-actions">
-              <Link href="/menu" className="btn btn-primary">
+              <Link href="/restaurants" className="btn btn-primary">
                 Order Now <ArrowRight size={18} />
               </Link>
               <Link href="/contact" className="btn btn-secondary">
@@ -71,6 +74,8 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+
+      <MultiVendorHomeSections />
 
       {/* Featured Categories */}
       <motion.section 

@@ -8,6 +8,8 @@ export interface CartItem {
   quantity: number;
   image_url?: string;
   category_id?: string;
+  /** Set from menu_items for merchant-scoped promos at checkout. */
+  merchant_id?: string;
 }
 
 interface CartState {
@@ -30,7 +32,13 @@ export const useCartStore = create<CartState>()(
         if (existingItem) {
           set({
             items: currentItems.map((i) =>
-              i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i
+              i.id === item.id
+                ? {
+                    ...i,
+                    quantity: i.quantity + item.quantity,
+                    merchant_id: i.merchant_id ?? item.merchant_id,
+                  }
+                : i
             ),
           });
         } else {

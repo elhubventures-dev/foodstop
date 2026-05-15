@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspace=@chopfast/web",
+    "dev:api": "npm run start:dev --workspace=@chopfast/api",
     "build": "npm run build --workspace=@chopfast/web",
     "start": "npm run start --workspace=@chopfast/web",
     "lint": "npm run lint --workspace=@chopfast/web"

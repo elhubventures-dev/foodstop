@@ -1,0 +1,298 @@
+.vendor-landing {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4);
+}
+
+.vendor-landing h1 {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  margin-bottom: var(--space-4);
+  color: var(--color-text-primary);
+}
+
+.vendor-landing p {
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--space-4);
+}
+
+.vendor-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}
+
+.vendor-btn-primary,
+.vendor-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity var(--transition-fast);
+}
+
+.vendor-btn-primary {
+  background: var(--color-primary);
+  color: var(--color-primary-foreground, #fff);
+  border: none;
+  cursor: pointer;
+}
+
+.vendor-btn-secondary {
+  background: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+
+.vendor-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.vendor-wizard-wrap {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-6) var(--space-4) var(--space-10);
+  background-color: var(--color-bg);
+}
+
+.vendor-wizard-card {
+  width: 100%;
+  max-width: 640px;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--color-border);
+}
+
+.vendor-wizard-card:has(.vendor-review-section) {
+  max-width: 720px;
+}
+
+.vendor-wizard-title {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.vendor-step-label {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-6);
+}
+
+.vendor-form-grid {
+  display: grid;
+  gap: var(--space-4);
+}
+
+@media (min-width: 560px) {
+  .vendor-form-grid.two {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.vendor-form-grid .full {
+  grid-column: 1 / -1;
+}
+
+.vendor-wizard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+  justify-content: space-between;
+  align-items: center;
+}
+
+.vendor-hint {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-1);
+}
+
+.vendor-review-block {
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  font-size: var(--text-sm);
+}
+
+.vendor-review-block h3 {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  margin-bottom: var(--space-2);
+  color: var(--color-text-primary);
+}
+
+.vendor-review-block pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--color-text-secondary);
+  font-family: var(--font-body, system-ui);
+  font-size: 0.8125rem;
+  margin: 0;
+}
+
+/* Step 5 — review cards */
+.vendor-review-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.vendor-review-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.vendor-review-card-title {
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.vendor-review-dl {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.vendor-review-row {
+  display: grid;
+  gap: var(--space-1);
+}
+
+@media (min-width: 520px) {
+  .vendor-review-row {
+    grid-template-columns: minmax(130px, 36%) 1fr;
+    align-items: start;
+    gap: var(--space-3) var(--space-4);
+  }
+}
+
+.vendor-review-row dt {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.vendor-review-row dd {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.vendor-review-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.vendor-review-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.vendor-review-link {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.vendor-review-link:hover {
+  text-decoration: underline;
+}
+
+.vendor-review-bool {
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.vendor-review-bool--yes {
+  color: hsl(142 45% 32%);
+}
+
+.vendor-review-bool--no {
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.vendor-form-grid .form-group select,
+.vendor-form-grid .form-group textarea {
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  outline: none;
+  font-family: inherit;
+  font-size: var(--text-sm);
+  width: 100%;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.vendor-form-grid .form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.vendor-form-grid .form-group select:focus,
+.vendor-form-grid .form-group textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px hsla(var(--color-primary-h), var(--color-primary-s), var(--color-primary-l), 0.2);
+}
+
+.vendor-check-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.vendor-check-row input[type='checkbox'] {
+  margin-top: 0.2rem;
+}
+
+.vendor-otp-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: flex-end;
+}
+
+.vendor-otp-row .form-group {
+  flex: 1;
+  min-width: 140px;
+}

@@ -24,29 +24,34 @@ export const useOrders = () => {
 
     fetchOrders();
 
-    // 2. Real-time Subscription
+    // Real-time: use a unique topic per mount. Reusing `channel('realtime_orders')` returns the
+    // same client channel; if another subscriber already called `.subscribe()`, adding `.on()`
+    // later throws: "cannot add postgres_changes ... after subscribe()".
+    const topic =
+      typeof crypto !== 'undefined' && 'randomUUID' in crypto
+        ? `realtime_orders_${crypto.randomUUID()}`
+        : `realtime_orders_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+
     const channel = supabase
-      .channel('realtime_orders')
+      .channel(topic)
       .on(
-        'postgres_changes', 
+        'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'orders' },
         (payload) => {
-          console.log('New Order Received:', payload.new);
           setOrders((current) => [payload.new, ...current]);
-          
-          // Trigger browser notification
+
           if (Notification.permission === 'granted') {
             new Notification('New Food Order!', {
               body: `Order ${payload.new.id} has just been placed.`,
-              icon: '/logo.png'
+              icon: '/logo.png',
             });
           }
-        }
+        },
       )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      void supabase.removeChannel(channel);
     };
   }, []);
 

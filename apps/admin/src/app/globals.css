@@ -66,6 +66,32 @@ body {
   height: 100vh;
   left: 0;
   top: 0;
+  overflow: hidden;
+}
+
+.sidebar-header {
+  flex-shrink: 0;
+}
+
+.sidebar-nav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  margin-right: -0.25rem;
+  padding-right: 0.25rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
+}
+
+.sidebar-nav ul {
+  padding-bottom: 0.5rem;
+}
+
+.sidebar-footer {
+  flex-shrink: 0;
+  margin-top: auto;
 }
 
 .main-wrapper {
@@ -124,4 +150,27 @@ body {
 
 .btn-primary:hover {
   background-color: var(--color-primary-dark);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spin {
+  animation: spin 0.85s linear infinite;
+}
+
+.merchant-analytics-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .merchant-analytics-grid {
+    grid-template-columns: 1fr;
+  }
 }

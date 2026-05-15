@@ -202,7 +202,7 @@ INSERT INTO store_settings (key, value) VALUES
   ('tax_rate', '{"rate": 0.075}') -- Standard VAT in Nigeria
   ON CONFLICT (key) DO NOTHING;
 INSERT INTO store_settings (key, value) VALUES
-  ('store_info', '{"name": "FOOD STOP", "phone": "+2349133449270", "email": "hello@foodstop.com.ng", "address": "12 Wuse 2 Road, Abuja"}')
+  ('store_info', '{"name": "Food Stop", "phone": "+2349133449270", "email": "hello@foodstop.com.ng", "address": "12 Wuse 2 Road, Abuja"}')
   ON CONFLICT (key) DO NOTHING;
 
 -- Row Level Security

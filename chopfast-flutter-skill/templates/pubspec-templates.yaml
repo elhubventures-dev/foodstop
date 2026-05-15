@@ -1,0 +1,361 @@
+# templates/customer-pubspec.yaml
+# Copy to apps/customer/pubspec.yaml
+
+name: customer
+description: ChopFast Customer App — Nigerian Food Delivery
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Shared packages (monorepo)
+  chopfast_ui:
+    path: ../../packages/chopfast_ui
+  chopfast_api:
+    path: ../../packages/chopfast_api
+  chopfast_auth:
+    path: ../../packages/chopfast_auth
+  chopfast_realtime:
+    path: ../../packages/chopfast_realtime
+  chopfast_maps:
+    path: ../../packages/chopfast_maps
+  chopfast_payments:
+    path: ../../packages/chopfast_payments
+  chopfast_push:
+    path: ../../packages/chopfast_push
+  chopfast_analytics:
+    path: ../../packages/chopfast_analytics
+  chopfast_offline:
+    path: ../../packages/chopfast_offline
+  chopfast_models:
+    path: ../../packages/chopfast_models
+
+  # State management
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+  hooks_riverpod: ^2.5.1
+  flutter_hooks: ^0.20.5
+
+  # Navigation
+  go_router: ^14.0.2
+
+  # Firebase
+  firebase_core: ^3.1.0
+  firebase_messaging: ^15.0.1
+  firebase_analytics: ^11.1.0
+  firebase_crashlytics: ^4.0.1
+
+  # Auth
+  local_auth: ^2.2.0
+  google_sign_in: ^6.2.1
+  sign_in_with_apple: ^6.1.0
+
+  # Storage
+  hive_flutter: ^1.1.0
+  flutter_secure_storage: ^9.0.0
+  shared_preferences: ^2.2.3
+
+  # UI
+  shimmer: ^3.0.0
+  lottie: ^3.1.0
+  flutter_animate: ^4.5.0
+  cached_network_image: ^3.3.1
+  flutter_svg: ^2.0.10+1
+  phosphor_flutter: ^2.1.0
+  pinput: ^5.0.0
+  phone_form_field: ^9.1.5
+  intl: ^0.19.0
+
+  # Media
+  image_picker: ^1.1.2
+  video_player: ^2.8.6
+  chewie: ^1.8.2
+  photo_view: ^0.14.0
+
+  # Utilities
+  url_launcher: ^6.3.0
+  share_plus: ^9.0.0
+  connectivity_plus: ^6.0.3
+  permission_handler: ^11.3.1
+  package_info_plus: ^8.0.0
+
+  # Customer-specific
+  confetti: ^0.7.0
+  scratch_card: ^2.0.0
+
+  # Monitoring
+  sentry_flutter: ^8.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  riverpod_generator: ^2.4.0
+  riverpod_lint: ^2.3.10
+  build_runner: ^2.4.9
+  go_router_builder: ^2.7.0
+  freezed: ^2.5.2
+  json_serializable: ^6.8.0
+  hive_generator: ^2.0.1
+  custom_lint: ^0.6.4
+  mocktail: ^1.0.4
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/animations/        # Lottie files
+    - assets/map_styles/        # Google Maps JSON styles
+  fonts:
+    - family: CabinetGrotesk
+      fonts:
+        - asset: assets/fonts/CabinetGrotesk-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/CabinetGrotesk-ExtraBold.ttf
+          weight: 800
+    - family: Satoshi
+      fonts:
+        - asset: assets/fonts/Satoshi-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Satoshi-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Satoshi-SemiBold.ttf
+          weight: 600
+    - family: JetBrainsMono
+      fonts:
+        - asset: assets/fonts/JetBrainsMono-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/JetBrainsMono-Bold.ttf
+          weight: 700
+
+---
+
+# templates/merchant-pubspec.yaml
+name: merchant
+description: ChopFast Merchant App — Manage Your Restaurant
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # All shared packages (same as customer)
+  chopfast_ui:
+    path: ../../packages/chopfast_ui
+  chopfast_api:
+    path: ../../packages/chopfast_api
+  chopfast_auth:
+    path: ../../packages/chopfast_auth
+  chopfast_realtime:
+    path: ../../packages/chopfast_realtime
+  chopfast_maps:
+    path: ../../packages/chopfast_maps
+  chopfast_payments:
+    path: ../../packages/chopfast_payments
+  chopfast_push:
+    path: ../../packages/chopfast_push
+  chopfast_analytics:
+    path: ../../packages/chopfast_analytics
+  chopfast_offline:
+    path: ../../packages/chopfast_offline
+  chopfast_models:
+    path: ../../packages/chopfast_models
+
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+  hooks_riverpod: ^2.5.1
+  flutter_hooks: ^0.20.5
+  go_router: ^14.0.2
+
+  firebase_core: ^3.1.0
+  firebase_messaging: ^15.0.1
+  firebase_crashlytics: ^4.0.1
+
+  local_auth: ^2.2.0
+  hive_flutter: ^1.1.0
+  flutter_secure_storage: ^9.0.0
+  shared_preferences: ^2.2.3
+
+  shimmer: ^3.0.0
+  lottie: ^3.1.0
+  flutter_animate: ^4.5.0
+  cached_network_image: ^3.3.1
+  flutter_svg: ^2.0.10+1
+  phosphor_flutter: ^2.1.0
+  pinput: ^5.0.0
+  intl: ^0.19.0
+  fl_chart: ^0.68.0
+
+  image_picker: ^1.1.2
+  image_cropper: ^7.0.3
+
+  url_launcher: ^6.3.0
+  share_plus: ^9.0.0
+  connectivity_plus: ^6.0.3
+  permission_handler: ^11.3.1
+
+  # Merchant-specific
+  flutter_tts: ^4.0.2          # Voice order alerts
+  home_widget: ^0.6.0          # Revenue home screen widget
+  wakelock_plus: ^1.2.6        # KDS screen always on
+  mobile_scanner: ^5.1.1       # Inventory barcode scanner
+  qr_flutter: ^4.1.0
+
+  sentry_flutter: ^8.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  riverpod_generator: ^2.4.0
+  build_runner: ^2.4.9
+  go_router_builder: ^2.7.0
+  freezed: ^2.5.2
+  json_serializable: ^6.8.0
+  hive_generator: ^2.0.1
+  mocktail: ^1.0.4
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/animations/
+    - assets/sounds/              # kitchen_bell.mp3
+  fonts:
+    # Same font declarations as customer app
+
+---
+
+# templates/rider-pubspec.yaml
+name: rider
+description: ChopFast Rider — Delivery Partner App
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  chopfast_ui:
+    path: ../../packages/chopfast_ui
+  chopfast_api:
+    path: ../../packages/chopfast_api
+  chopfast_auth:
+    path: ../../packages/chopfast_auth
+  chopfast_realtime:
+    path: ../../packages/chopfast_realtime
+  chopfast_maps:
+    path: ../../packages/chopfast_maps
+  chopfast_push:
+    path: ../../packages/chopfast_push
+  chopfast_offline:
+    path: ../../packages/chopfast_offline
+  chopfast_models:
+    path: ../../packages/chopfast_models
+
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+  hooks_riverpod: ^2.5.1
+  flutter_hooks: ^0.20.5
+  go_router: ^14.0.2
+
+  firebase_core: ^3.1.0
+  firebase_messaging: ^15.0.1
+
+  local_auth: ^2.2.0
+  hive_flutter: ^1.1.0
+  flutter_secure_storage: ^9.0.0
+  shared_preferences: ^2.2.3
+
+  shimmer: ^3.0.0
+  lottie: ^3.1.0
+  flutter_animate: ^4.5.0
+  cached_network_image: ^3.3.1
+  flutter_svg: ^2.0.10+1
+  phosphor_flutter: ^2.1.0
+  pinput: ^5.0.0
+  intl: ^0.19.0
+  fl_chart: ^0.68.0
+  heat_map: ^0.0.5
+
+  url_launcher: ^6.3.0
+  connectivity_plus: ^6.0.3
+  permission_handler: ^11.3.1
+  image_picker: ^1.1.2
+
+  # Rider-specific
+  flutter_background_service: ^5.0.5  # Background GPS tracking
+  background_location: ^0.5.0
+
+  sentry_flutter: ^8.3.0
+
+---
+
+# templates/shared-package-pubspec.yaml
+# Template for chopfast_ui, chopfast_models, etc.
+name: chopfast_ui
+description: ChopFast shared design system — tokens, components, theme
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.9.0
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+  intl: ^0.19.0
+  flutter_svg: ^2.0.10+1
+  phosphor_flutter: ^2.1.0
+  cached_network_image: ^3.3.1
+  shimmer: ^3.0.0
+  lottie: ^3.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  build_runner: ^2.4.9
+  freezed: ^2.5.2
+  json_serializable: ^6.8.0
+  riverpod_generator: ^2.4.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/fonts/
+  fonts:
+    - family: CabinetGrotesk
+      fonts:
+        - asset: assets/fonts/CabinetGrotesk-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/CabinetGrotesk-ExtraBold.ttf
+          weight: 800
+    - family: Satoshi
+      fonts:
+        - asset: assets/fonts/Satoshi-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Satoshi-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Satoshi-SemiBold.ttf
+          weight: 600
+    - family: JetBrainsMono
+      fonts:
+        - asset: assets/fonts/JetBrainsMono-Regular.ttf
+          weight: 400

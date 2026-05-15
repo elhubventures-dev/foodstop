@@ -19,7 +19,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@chopfast/shared": ["../../packages/shared/index.ts"],
+      "@chopfast/ui": ["../../packages/ui/index.ts"]
     }
   },
   "include": [

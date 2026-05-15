@@ -26,7 +26,7 @@ export default function ProductDetailPage() {
       try {
         const { data, error } = await supabase
           .from('menu_items')
-          .select('*, categories(*)')
+          .select('*, categories(*), merchants(id, business_name)')
           .eq('slug', slug)
           .single();
 
@@ -38,11 +38,15 @@ export default function ProductDetailPage() {
           }
           throw error;
         }
-        
-        // Normalize the item for consistency with mock data
+
+        const m = data.merchants;
+        const merchant = Array.isArray(m) ? m[0] : m;
+        const { merchants: _omitMerch, categories, ...rest } = data;
         const normalizedItem = {
-          ...data,
-          category_slug: data.categories?.slug || data.category_slug
+          ...rest,
+          category_slug: categories?.slug || data.category_slug,
+          merchant_id: data.merchant_id || merchant?.id || undefined,
+          merchant_name: merchant?.business_name || undefined,
         };
         setItem(normalizedItem);
       } catch (err) {
@@ -68,7 +72,14 @@ export default function ProductDetailPage() {
   if (!item) return <div className="container" style={{ padding: '8rem 0', textAlign: 'center' }}>Item not found.</div>;
 
   const handleAddToCart = () => {
-    addItem({ ...item, quantity, subtotal: item?.price ? item.price * quantity : 0 });
+    const { merchants: _m, categories: _c, ...rest } = item;
+    addItem({
+      ...rest,
+      quantity,
+      subtotal: item?.price ? item.price * quantity : 0,
+      merchant_id: item.merchant_id,
+      merchant_name: item.merchant_name,
+    });
   };
   
   const handleBuyNow = () => {

@@ -13,7 +13,14 @@ export default function MenuCard({ item }) {
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    addItem(item);
+    const { merchants: _m, categories: _c, ...rest } = item;
+    addItem({
+      ...rest,
+      quantity: 1,
+      subtotal: Number(item.price) * 1 || 0,
+      merchant_id: item.merchant_id,
+      merchant_name: item.merchant_name,
+    });
   };
 
   return (

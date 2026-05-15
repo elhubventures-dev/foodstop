@@ -321,6 +321,11 @@ input, textarea, select {
   color: white;
 }
 
+.btn-sm {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
 .cart-button:hover .lucide-shopping-bag {
   animation: bounce 0.5s ease-in-out;
 }

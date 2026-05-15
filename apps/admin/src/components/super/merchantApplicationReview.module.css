@@ -1,0 +1,325 @@
+.page {
+  max-width: 1400px;
+}
+
+.pageHeader {
+  margin-bottom: 1.5rem;
+}
+
+.pageTitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+}
+
+.pageSub {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  margin-top: 0.35rem;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(280px, 360px) 1fr;
+    align-items: start;
+  }
+}
+
+.queueCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.queueHead {
+  padding: 0.75rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg-secondary);
+}
+
+.queueList {
+  max-height: min(70vh, 640px);
+  overflow-y: auto;
+}
+
+.queueRow {
+  width: 100%;
+  text-align: left;
+  padding: 0.85rem 1rem;
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.queueRow:hover {
+  background: var(--color-bg-secondary);
+}
+
+.queueRowActive {
+  background: rgba(var(--color-primary-rgb, 234, 88, 12), 0.08);
+  border-left: 3px solid var(--color-primary);
+}
+
+.rowTitle {
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+}
+
+.rowMeta {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: 0.25rem;
+}
+
+.slaRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.45rem;
+}
+
+.slaBar {
+  flex: 1;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--color-border);
+  overflow: hidden;
+}
+
+.slaFill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.2s;
+}
+
+.slaOk {
+  background: var(--color-success);
+}
+
+.slaWarn {
+  background: var(--color-warning);
+}
+
+.slaOver {
+  background: var(--color-error);
+}
+
+.badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  margin-top: 0.35rem;
+}
+
+.badgeRfi {
+  background: rgba(59, 130, 246, 0.15);
+  color: #1d4ed8;
+}
+
+.detailCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.detailGrid {
+  display: grid;
+  gap: 0.65rem 1.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  font-size: 0.8125rem;
+  margin-bottom: 1.25rem;
+}
+
+.detailLabel {
+  color: var(--color-text-muted);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.docStrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.docTab {
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.docTabActive {
+  border-color: var(--color-primary);
+  background: rgba(234, 88, 12, 0.08);
+  color: var(--color-primary);
+}
+
+.viewer {
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  min-height: 360px;
+  background: #0f172a;
+  position: relative;
+  overflow: hidden;
+}
+
+.viewer iframe,
+.viewer img {
+  width: 100%;
+  height: min(52vh, 480px);
+  border: none;
+  object-fit: contain;
+  background: #0f172a;
+}
+
+.viewerFallback {
+  padding: 2rem;
+  color: #94a3b8;
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+.viewerToolbar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.5rem 0.75rem;
+  background: #1e293b;
+  border-bottom: 1px solid #334155;
+}
+
+.viewerToolbar a {
+  color: #93c5fd;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.btn {
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.btnApprove {
+  background: var(--color-success);
+  color: #fff;
+}
+
+.btnReject {
+  background: #fff;
+  color: var(--color-error);
+  border-color: var(--color-error);
+}
+
+.btnRfi {
+  background: #fff;
+  color: #2563eb;
+  border-color: #2563eb;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 1rem;
+}
+
+.modal {
+  width: 100%;
+  max-width: 440px;
+  background: var(--color-surface);
+  border-radius: 12px;
+  padding: 1.25rem;
+  border: 1px solid var(--color-border);
+}
+
+.modal h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+.modal textarea {
+  width: 100%;
+  min-height: 100px;
+  margin-top: 0.75rem;
+  padding: 0.65rem;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  font-size: 0.875rem;
+  resize: vertical;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.err {
+  color: var(--color-error);
+  font-size: 0.8125rem;
+  margin-top: 0.5rem;
+}
+
+.empty {
+  padding: 2rem;
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.spin {
+  animation: marAppSpin 0.85s linear infinite;
+}
+
+@keyframes marAppSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}

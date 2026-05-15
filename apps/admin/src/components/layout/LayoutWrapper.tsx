@@ -13,6 +13,11 @@ export const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const checkAuth = async () => {
+      if (pathname?.startsWith('/merchant')) {
+        setLoading(false);
+        return;
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session && pathname !== '/login') {
@@ -27,9 +32,10 @@ export const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
       setLoading(false);
     };
 
-    checkAuth();
+    void checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (pathname?.startsWith('/merchant')) return;
       if (event === 'SIGNED_OUT') {
         setIsAuthenticated(false);
         router.push('/login');
@@ -52,6 +58,10 @@ export const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
 
   // If we are on the login page, render without the admin shell
   if (pathname === '/login') {
+    return <>{children}</>;
+  }
+
+  if (pathname?.startsWith('/merchant')) {
     return <>{children}</>;
   }
 

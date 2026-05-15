@@ -1,0 +1,8 @@
+# Minimal Supabase CLI config for Edge Functions.
+# Run `supabase link` and adjust project_id when using the CLI locally.
+
+[project]
+# id = "your-project-ref"
+
+[functions.order-delivered]
+verify_jwt = false

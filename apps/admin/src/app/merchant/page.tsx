@@ -1,124 +1,217 @@
 'use client';
-import React from 'react';
-import { 
-  Users, 
-  MapPin, 
-  Package, 
-  TrendingUp,
-  Clock,
-  ChevronRight
-} from 'lucide-react';
 
-export default function MerchantPortalPage() {
-  const branchData = {
-    name: 'Ikeja Branch',
-    manager: 'Oluwaseun Adewale',
-    status: 'Open',
-    staffCount: 12,
-    activeOrders: 8,
-    todayRevenue: '₦84,200',
+import React, { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
+import { Package, TrendingUp, Wallet, ArrowRight, Award } from 'lucide-react';
+import { useMerchantAuth } from '@/context/MerchantAuthContext';
+import { merchantApiGet } from '@/lib/merchantApi';
+import { supabase, fetchPlatformFeatureFlags, isFeatureOn } from '@chopfast/shared';
+
+type WalletSummary = {
+  available_balance?: number;
+  pending_balance?: number;
+  total_earned?: number;
+  wallet_initialized?: boolean;
+};
+
+function fmt(n: number | undefined): string {
+  if (n == null || Number.isNaN(n)) return '₦0';
+  return `₦${n.toLocaleString('en-NG', { maximumFractionDigits: 0 })}`;
+}
+
+const TIER_STYLES: Record<string, { bg: string; fg: string; label: string }> = {
+  bronze: { bg: '#FFF4E6', fg: '#92400e', label: 'Bronze' },
+  silver: { bg: '#F3F4F6', fg: '#475569', label: 'Silver' },
+  gold: { bg: '#FFFBEB', fg: '#b45309', label: 'Gold' },
+  platinum: { bg: '#F5F3FF', fg: '#5b21b6', label: 'Platinum' },
+};
+
+export default function MerchantOverviewPage() {
+  const { session, accessToken } = useMerchantAuth();
+  const [wallet, setWallet] = useState<WalletSummary | null>(null);
+  const [orderCount, setOrderCount] = useState<number | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  type TierInfo = {
+    tier: string;
+    commission_override: number | null;
+    monthly_gmv: number | string | null;
   };
+  const [tierRow, setTierRow] = useState<TierInfo | null>(null);
+  const [showTier, setShowTier] = useState(false);
+
+  const canApi =
+    session?.merchant.is_verified === true && session?.merchant.is_active === true;
+
+  const load = useCallback(async () => {
+    if (!accessToken || !canApi) return;
+    setErr(null);
+    try {
+      const w = await merchantApiGet<WalletSummary>('/merchant/wallet', accessToken);
+      setWallet(w);
+      const orders = await merchantApiGet<unknown[]>(
+        '/merchant/orders?limit=200',
+        accessToken,
+      );
+      setOrderCount(Array.isArray(orders) ? orders.length : 0);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Could not load dashboard');
+    }
+  }, [accessToken, canApi]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  useEffect(() => {
+    const mid = session?.merchant?.id;
+    if (!mid) return;
+    let alive = true;
+    (async () => {
+      const flags = await fetchPlatformFeatureFlags(supabase);
+      if (!alive) return;
+      if (!isFeatureOn(flags, 'merchant_tiers_badges')) {
+        setShowTier(false);
+        return;
+      }
+      setShowTier(true);
+      const { data } = await supabase
+        .from('merchant_tiers')
+        .select('tier, commission_override, monthly_gmv')
+        .eq('merchant_id', mid)
+        .maybeSingle();
+      if (!alive) return;
+      setTierRow((data as TierInfo | null) ?? null);
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [session?.merchant?.id]);
+
+  if (!session) return null;
+
+  const tierKey = (tierRow?.tier ?? 'bronze').toLowerCase();
+  const tierStyle = TIER_STYLES[tierKey] ?? TIER_STYLES.bronze;
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--color-primary)', marginBottom: '0.5rem' }}>
-            <MapPin size={18} />
-            <span style={{ fontWeight: '600', fontSize: '0.875rem' }}>MERCHANT PORTAL</span>
-          </div>
-          <h2 style={{ fontSize: '1.75rem', fontWeight: 'bold' }}>{branchData.name} Management</h2>
-          <p style={{ color: 'var(--color-text-secondary)' }}>Welcome back, {branchData.manager}. Manage your staff and local menu here.</p>
-        </div>
-        <div style={{ display: 'flex', gap: '1rem' }}>
-           <button className="btn btn-secondary">Update Status</button>
-           <button className="btn btn-primary">Branch Settings</button>
-        </div>
-      </div>
+    <div style={{ padding: '1.5rem 2rem 2rem' }}>
+      <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+        Overview
+      </h1>
+      <p style={{ color: 'var(--color-text-secondary)', marginBottom: '1.5rem' }}>
+        Welcome back, {session.merchant.business_name}.
+      </p>
 
-      <div className="stats-grid" style={{ marginBottom: '2.5rem' }}>
-        <div className="card">
-           <p style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', marginBottom: '0.5rem' }}>Daily Revenue</p>
-           <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{branchData.todayRevenue}</h3>
-           <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: 'var(--color-success)', fontSize: '0.75rem', marginTop: '0.5rem' }}>
-              <TrendingUp size={14} />
-              <span>+15% vs yesterday</span>
-           </div>
+      {showTier && (
+        <div
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 10,
+            marginBottom: '1.25rem',
+            padding: '0.65rem 1rem',
+            borderRadius: 10,
+            background: tierStyle.bg,
+            color: tierStyle.fg,
+            fontWeight: 600,
+            fontSize: '0.9rem',
+          }}
+        >
+          <Award size={20} aria-hidden />
+          <span>
+            Tier: {tierStyle.label}
+            {tierRow?.commission_override != null && (
+              <span style={{ fontWeight: 500, marginLeft: 8 }}>
+                (commission override {Number(tierRow.commission_override).toFixed(2)})
+              </span>
+            )}
+          </span>
+          {tierRow?.monthly_gmv != null && (
+            <span style={{ fontWeight: 500, opacity: 0.9 }}>
+              GMV (tracked): ₦{Number(tierRow.monthly_gmv).toLocaleString('en-NG')}
+            </span>
+          )}
         </div>
-        <div className="card">
-           <p style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', marginBottom: '0.5rem' }}>Branch Staff</p>
-           <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{branchData.staffCount} Active</h3>
-           <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginTop: '0.5rem' }}>2 on break</p>
-        </div>
-        <div className="card">
-           <p style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', marginBottom: '0.5rem' }}>Avg. Prep Time</p>
-           <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>18m</h3>
-           <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginTop: '0.5rem' }}>Goal: 15m</p>
-        </div>
-      </div>
+      )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem' }}>
-         <div className="card" style={{ padding: '0' }}>
-            <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between' }}>
-               <h3 style={{ fontWeight: '600' }}>Branch Staff Directory</h3>
-               <button style={{ color: 'var(--color-primary)', fontSize: '0.875rem', fontWeight: '600' }}>Add Staff</button>
+      {!canApi && (
+        <div
+          style={{
+            padding: '1rem',
+            borderRadius: 8,
+            background: 'rgba(234,179,8,0.12)',
+            border: '1px solid rgba(234,179,8,0.35)',
+            marginBottom: '1.5rem',
+            fontSize: '0.9rem',
+          }}
+        >
+          Your account is not verified yet. After admin approval, live wallet and order data will
+          load here.
+        </div>
+      )}
+
+      {err && (
+        <div style={{ color: 'var(--color-error)', marginBottom: '1rem', fontSize: '0.9rem' }}>
+          {err}
+        </div>
+      )}
+
+      {canApi && (
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+            gap: '1rem',
+            marginBottom: '2rem',
+          }}
+        >
+          <div className="card" style={{ padding: '1.25rem' }}>
+            <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginBottom: 8 }}>
+              <Wallet size={16} style={{ display: 'inline', verticalAlign: 'text-bottom', marginRight: 6 }} />
+              Available balance
             </div>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-               <thead>
-                  <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--color-border)', fontSize: '0.75rem', color: 'var(--color-text-secondary)', textTransform: 'uppercase' }}>
-                     <th style={{ padding: '1rem 1.5rem' }}>Name</th>
-                     <th style={{ padding: '1rem 1.5rem' }}>Role</th>
-                     <th style={{ padding: '1rem 1.5rem' }}>Status</th>
-                     <th style={{ padding: '1rem 1.5rem' }}>Today's Orders</th>
-                  </tr>
-               </thead>
-               <tbody>
-                  {[
-                    { name: 'Kemi Adebayo', role: 'Head Chef', status: 'In Kitchen', orders: '-' },
-                    { name: 'Tunde Bakare', role: 'Kitchen Asst.', status: 'Active', orders: '14' },
-                    { name: 'Chioma Okeke', role: 'Front Desk', status: 'On Break', orders: '-' },
-                    { name: 'Ibrahim Musa', role: 'Packer', status: 'Active', orders: '28' },
-                  ].map((staff, i) => (
-                    <tr key={i} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                       <td style={{ padding: '1rem 1.5rem', fontWeight: '600' }}>{staff.name}</td>
-                       <td style={{ padding: '1rem 1.5rem' }}>{staff.role}</td>
-                       <td style={{ padding: '1rem 1.5rem' }}>
-                          <span style={{ 
-                             padding: '0.25rem 0.6rem', 
-                             borderRadius: '99px', 
-                             fontSize: '0.7rem', 
-                             fontWeight: '600',
-                             backgroundColor: staff.status === 'Active' ? '#f0fdf4' : '#fef2f2',
-                             color: staff.status === 'Active' ? '#16a34a' : '#dc2626'
-                          }}>{staff.status}</span>
-                       </td>
-                       <td style={{ padding: '1rem 1.5rem' }}>{staff.orders}</td>
-                    </tr>
-                  ))}
-               </tbody>
-            </table>
-         </div>
+            <div style={{ fontSize: '1.35rem', fontWeight: 700 }}>
+              {fmt(wallet?.available_balance)}
+            </div>
+          </div>
+          <div className="card" style={{ padding: '1.25rem' }}>
+            <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginBottom: 8 }}>
+              Pending
+            </div>
+            <div style={{ fontSize: '1.35rem', fontWeight: 700 }}>{fmt(wallet?.pending_balance)}</div>
+          </div>
+          <div className="card" style={{ padding: '1.25rem' }}>
+            <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginBottom: 8 }}>
+              <TrendingUp size={16} style={{ display: 'inline', verticalAlign: 'text-bottom', marginRight: 6 }} />
+              Total earned
+            </div>
+            <div style={{ fontSize: '1.35rem', fontWeight: 700 }}>{fmt(wallet?.total_earned)}</div>
+          </div>
+          <div className="card" style={{ padding: '1.25rem' }}>
+            <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginBottom: 8 }}>
+              <Package size={16} style={{ display: 'inline', verticalAlign: 'text-bottom', marginRight: 6 }} />
+              Orders (loaded)
+            </div>
+            <div style={{ fontSize: '1.35rem', fontWeight: 700 }}>
+              {orderCount == null ? '—' : orderCount}
+            </div>
+          </div>
+        </div>
+      )}
 
-         <div className="card">
-            <h3 style={{ fontWeight: '600', marginBottom: '1.5rem' }}>Branch Inventory Alerts</h3>
-            {[
-              { item: 'Basmati Rice', stock: 'Low (15kg)', color: 'var(--color-warning)' },
-              { item: 'Vegetable Oil', stock: 'Critical (2L)', color: 'var(--color-error)' },
-              { item: 'Chicken Breast', stock: 'Normal (45kg)', color: 'var(--color-success)' },
-              { item: 'Scotch Bonnet', stock: 'Out of Stock', color: 'var(--color-error)' },
-            ].map((inv, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 0', borderBottom: i < 3 ? '1px solid var(--color-border)' : 'none' }}>
-                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <div style={{ width: '8px', height: '8px', borderRadius: '4px', backgroundColor: inv.color }}></div>
-                    <span style={{ fontWeight: '500' }}>{inv.item}</span>
-                 </div>
-                 <span style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>{inv.stock}</span>
-              </div>
-            ))}
-            <button style={{ width: '100%', marginTop: '1.5rem', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--color-border)', backgroundColor: 'transparent', fontWeight: '600' }}>
-               Manage Inventory
-            </button>
-         </div>
+      <h2 style={{ fontSize: '1.05rem', fontWeight: 600, marginBottom: '0.75rem' }}>Quick links</h2>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+        <Link href="/merchant/live-orders" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+          Live orders <ArrowRight size={16} />
+        </Link>
+        <Link href="/merchant/menu" className="btn btn-secondary">
+          Menu
+        </Link>
+        <Link href="/merchant/payouts" className="btn btn-secondary">
+          Wallet & payouts
+        </Link>
+        <Link href="/merchant/orders/history" className="btn btn-secondary">
+          Order history
+        </Link>
       </div>
     </div>
   );

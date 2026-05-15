@@ -1,11 +1,22 @@
 'use client';
+import { useState } from 'react';
 import { X, Plus, Minus, Trash2, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import './CartDrawer.css';
 
 export default function CartDrawer() {
-  const { cart, itemCount, isDrawerOpen, closeDrawer, updateQuantity, removeItem } = useCart();
+  const {
+    cart,
+    itemCount,
+    isDrawerOpen,
+    closeDrawer,
+    updateQuantity,
+    removeItem,
+    applyMerchantPromo,
+    clearMerchantPromo,
+  } = useCart();
+  const [promoInput, setPromoInput] = useState('');
 
   if (!isDrawerOpen) return null;
 
@@ -77,6 +88,61 @@ export default function CartDrawer() {
           )}
         </div>
 
+        {cart.items.length > 0 && cart.merchantName && (
+          <div style={{ padding: '0 1.25rem 0.5rem', fontSize: '0.8125rem', color: 'var(--color-text-secondary)' }}>
+            Ordering from <strong style={{ color: 'var(--color-text-primary)' }}>{cart.merchantName}</strong>
+          </div>
+        )}
+
+        {cart.items.length > 0 && (
+          <div className="cart-promo" style={{ padding: '0 1.25rem 0.75rem' }}>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <input
+                type="text"
+                value={promoInput}
+                onChange={(e) => setPromoInput(e.target.value)}
+                placeholder="Promo code"
+                className="form-input"
+                style={{
+                  flex: 1,
+                  padding: '0.5rem 0.65rem',
+                  borderRadius: 8,
+                  border: '1px solid var(--color-border)',
+                  fontSize: '0.875rem',
+                }}
+              />
+              <button
+                type="button"
+                className="btn"
+                style={{ whiteSpace: 'nowrap', fontSize: '0.8125rem' }}
+                onClick={() => void applyMerchantPromo(promoInput)}
+              >
+                Apply
+              </button>
+            </div>
+            {cart.merchantPromo?.valid && (
+              <button
+                type="button"
+                onClick={() => {
+                  clearMerchantPromo();
+                  setPromoInput('');
+                }}
+                style={{
+                  marginTop: 6,
+                  fontSize: '0.75rem',
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--color-text-muted)',
+                  cursor: 'pointer',
+                  textDecoration: 'underline',
+                }}
+              >
+                Remove {String(cart.merchantPromo.code || '').toUpperCase()}
+              </button>
+            )}
+          </div>
+        )}
+
         {cart.items.length > 0 && (
           <div className="cart-footer">
             <div className="cart-summary">
@@ -90,7 +156,7 @@ export default function CartDrawer() {
               </div>
               {cart.discount > 0 && (
                 <div className="summary-row text-success">
-                  <span>Discount</span>
+                  <span>Promo</span>
                   <span>-₦{cart.discount.toLocaleString()}</span>
                 </div>
               )}

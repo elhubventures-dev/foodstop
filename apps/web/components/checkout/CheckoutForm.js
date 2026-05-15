@@ -7,7 +7,8 @@ import { toast } from 'react-hot-toast';
 
 export default function CheckoutForm() {
   const router = useRouter();
-  const { cart, clearCart } = useCart();
+  const { cart, clearCart, applyMerchantPromo, clearMerchantPromo } = useCart();
+  const [promoInput, setPromoInput] = useState('');
   const { user, profile } = useAuth();
   
   const [email, setEmail] = useState('');
@@ -56,7 +57,8 @@ export default function CheckoutForm() {
           phoneNumber: phone,
           email,
           userId: user?.id,
-          paystackReference
+          paystackReference,
+          promoCode: cart.merchantPromo?.valid ? cart.merchantPromo.code : undefined,
         }),
       });
 
@@ -151,6 +153,42 @@ export default function CheckoutForm() {
               placeholder="Enter your full delivery address"
             />
           </div>
+          <div style={{ marginBottom: '1.5rem' }}>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Promo code (optional)</label>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <input
+                type="text"
+                value={promoInput}
+                onChange={(e) => setPromoInput(e.target.value)}
+                className="form-input"
+                style={{ flex: 1, padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--color-border)' }}
+                placeholder="Enter code"
+              />
+              <button
+                type="button"
+                className="btn btn-primary"
+                style={{ padding: '0 1rem' }}
+                onClick={() => void applyMerchantPromo(promoInput)}
+              >
+                Apply
+              </button>
+            </div>
+            {cart.merchantPromo?.valid && (
+              <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: 8 }}>
+                Applied: <strong>{String(cart.merchantPromo.code || '').toUpperCase()}</strong>{' '}
+                <button
+                  type="button"
+                  onClick={() => {
+                    clearMerchantPromo();
+                    setPromoInput('');
+                  }}
+                  style={{ background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer', textDecoration: 'underline' }}
+                >
+                  Remove
+                </button>
+              </p>
+            )}
+          </div>
           <button 
             type="submit" 
             className="btn btn-primary" 
@@ -189,8 +227,14 @@ export default function CheckoutForm() {
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: 'var(--color-text-secondary)' }}>
               <span>Delivery Fee</span>
-              <span>₦{deliveryFee.toLocaleString()}</span>
+              <span>{deliveryFee === 0 ? 'Free' : `₦${deliveryFee.toLocaleString()}`}</span>
             </div>
+            {cart.discount > 0 && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: '#16a34a' }}>
+                <span>Promo</span>
+                <span>-₦{cart.discount.toLocaleString()}</span>
+              </div>
+            )}
           </div>
           
           <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1rem' }}>

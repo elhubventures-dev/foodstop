@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingBag, Menu, User, MapPin } from 'lucide-react';
+import { ShoppingBag, Menu, User, MapPin, Search } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
 import { usePathname } from 'next/navigation';
@@ -45,9 +45,15 @@ export default function Header() {
 
         {/* Desktop Navigation */}
         <nav className="desktop-nav">
+          <form className="header-search" action="/search" method="get" role="search">
+            <Search size={16} aria-hidden />
+            <input name="q" type="search" placeholder="Search food & restaurants" aria-label="Search" />
+          </form>
+          <Link href="/restaurants" className="nav-link">Restaurants</Link>
           <Link href="/menu" className="nav-link">Menu</Link>
           <Link href="/contact" className="nav-link">Locations</Link>
           <Link href="/story" className="nav-link">Our Story</Link>
+          <Link href="/become-a-vendor" className="nav-link">Become a vendor</Link>
           <div className="delivery-info">
             <MapPin size={16} />
             <span>Abuja & Port Harcourt</span>
@@ -72,9 +78,12 @@ export default function Header() {
         {/* Mobile Menu Overlay */}
         <div className={`mobile-menu-overlay ${isMobileMenuOpen ? 'open' : ''}`}>
            <nav className="mobile-nav">
+              <Link href="/restaurants" className="mobile-nav-link" onClick={closeMobileMenu}>Restaurants</Link>
+              <Link href="/search" className="mobile-nav-link" onClick={closeMobileMenu}>Search</Link>
               <Link href="/menu" className="mobile-nav-link" onClick={closeMobileMenu}>Full Menu</Link>
               <Link href="/contact" className="mobile-nav-link" onClick={closeMobileMenu}>Our Locations</Link>
               <Link href="/story" className="mobile-nav-link" onClick={closeMobileMenu}>The Story</Link>
+              <Link href="/become-a-vendor" className="mobile-nav-link" onClick={closeMobileMenu}>Become a vendor</Link>
               <Link href="/account" className="mobile-nav-link" onClick={closeMobileMenu}>My Account</Link>
            </nav>
         </div>
