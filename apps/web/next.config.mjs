@@ -13,16 +13,7 @@ const nextConfig = {
   },
   // npm workspaces hoist deps to the repo root; webpack must resolve from there on Vercel.
   webpack: (config) => {
-    const rootModules = path.join(monorepoRoot, "node_modules");
-    config.resolve.modules = [
-      rootModules,
-      ...(Array.isArray(config.resolve.modules)
-        ? config.resolve.modules
-        : config.resolve.modules
-          ? [config.resolve.modules]
-          : []),
-      "node_modules",
-    ];
+    config.resolve.modules.push(path.resolve(monorepoRoot, "node_modules"));
     return config;
   },
 };
