@@ -16,6 +16,7 @@ const nextConfig = {
     config.resolve.modules.push(path.resolve(monorepoRoot, "node_modules"));
     return config;
   },
+  serverExternalPackages: ['nodemailer'],
 };
 
 export default nextConfig;

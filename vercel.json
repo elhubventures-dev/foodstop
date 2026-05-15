@@ -1,7 +1,7 @@
 {
   "version": 2,
   "framework": "nextjs",
-  "installCommand": "npm install --legacy-peer-deps",
+  "installCommand": "npm install --legacy-peer-deps && npm install --workspace=@chopfast/web --legacy-peer-deps",
   "buildCommand": "npm run build --workspace=@chopfast/web",
   "outputDirectory": "apps/web/.next"
 }
