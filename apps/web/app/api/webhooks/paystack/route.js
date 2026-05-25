@@ -11,13 +11,18 @@ export async function POST(request) {
   try {
     const payload = await request.text();
     const signature = request.headers.get('x-paystack-signature');
+    const secret = process.env.PAYSTACK_SECRET_KEY;
+
+    if (!secret || !signature) {
+      return NextResponse.json({ error: 'Webhook verification is not configured' }, { status: 401 });
+    }
     
     // Verify Paystack signature
-    const hash = crypto.createHmac('sha512', process.env.PAYSTACK_SECRET_KEY)
+    const hash = crypto.createHmac('sha512', secret)
                        .update(payload)
                        .digest('hex');
                        
-    if (hash !== signature) {
+    if (!timingSafeEqualHex(hash, signature)) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
     }
 
@@ -97,7 +102,7 @@ export async function POST(request) {
         // Send Alert to Admin
         await sendEmail({
           to: process.env.SMTP_FROM_EMAIL, // Or a dedicated ADMIN_EMAIL env var
-          subject: `New Order Received - ₦${Number(fullOrder.total_amount).toLocaleString()}`,
+          subject: `New Order Received - ₦${Number(fullOrder.total).toLocaleString()}`,
           html: generateAdminNotificationTemplate(fullOrder)
         });
       }
@@ -111,4 +116,11 @@ export async function POST(request) {
     console.error('Webhook error:', error);
     return NextResponse.json({ error: 'Webhook handler failed' }, { status: 500 });
   }
+}
+
+function timingSafeEqualHex(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string' || a.length !== b.length) {
+    return false;
+  }
+  return crypto.timingSafeEqual(Buffer.from(a, 'hex'), Buffer.from(b, 'hex'));
 }

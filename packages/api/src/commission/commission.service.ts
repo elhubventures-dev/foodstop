@@ -114,14 +114,16 @@ export class CommissionService {
     const vatAmount = toNumber(row.vat_amount);
     const merchantNet = toNumber(row.merchant_net);
 
-    const releaseAt = await this.scheduleReleaseJob({
-      orderId: order.id,
-      merchantId: merchant.id,
-      amount: merchantNet,
-      cause: 'initial',
-    });
+    let releaseAt: Date | null = null;
 
     if (!row.was_idempotent) {
+      releaseAt = await this.scheduleReleaseJob({
+        orderId: order.id,
+        merchantId: merchant.id,
+        amount: merchantNet,
+        cause: 'initial',
+      });
+
       await this.notifications.notify(merchant.id, {
         type: 'wallet_credit',
         title: 'Order delivered — wallet credited',

@@ -38,7 +38,7 @@ export interface CommissionResult {
   commissionAmount: number;
   vatAmount: number;
   merchantNet: number;
-  releaseScheduledAt: Date;
+  releaseScheduledAt: Date | null;
   wasIdempotent: boolean;
 }
 

@@ -85,6 +85,7 @@ export class PaystackWebhookController {
         `Paystack webhook handler error: ${(err as Error).message}`,
         (err as Error).stack,
       );
+      throw err;
     }
 
     return { received: true };

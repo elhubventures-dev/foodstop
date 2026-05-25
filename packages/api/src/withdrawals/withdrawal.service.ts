@@ -437,14 +437,15 @@ export class WithdrawalService {
     return { processed, failed, skipped, results };
   }
 
-  private async executePaystackTransfer(wd: Record<string, unknown>): Promise<{
+  private async executePaystackTransfer(inputWd: Record<string, unknown>): Promise<{
     withdrawal_id: string;
     paystack_transfer_code: string | null;
     paystack_reference: string | null;
     status: string;
   }> {
-    const merchantId = wd.merchant_id as string;
-    const withdrawalId = wd.id as string;
+    let wd = inputWd;
+    const merchantId = inputWd.merchant_id as string;
+    const withdrawalId = inputWd.id as string;
 
     const paystackSecret = this.config.get('paystack.secretKey', {
       infer: true,
@@ -452,6 +453,27 @@ export class WithdrawalService {
     if (!paystackSecret) {
       throw new ServiceUnavailableException('PAYSTACK_SECRET_KEY missing.');
     }
+
+    const { data: claimed, error: claimErr } = await this.supabase.db
+      .from('merchant_withdrawals')
+      .update({ status: 'processing' })
+      .eq('id', withdrawalId)
+      .eq('status', 'pending')
+      .is('paystack_transfer_code', null)
+      .select('*')
+      .maybeSingle();
+
+    if (claimErr) {
+      throw new ConflictException(
+        `Could not claim withdrawal for payout: ${claimErr.message}`,
+      );
+    }
+    if (!claimed) {
+      throw new ConflictException(
+        'Withdrawal is already being processed or has a transfer code.',
+      );
+    }
+    wd = claimed as Record<string, unknown>;
 
     let recipientCode = wd.paystack_recipient_code as string | null;
 
@@ -481,9 +503,15 @@ export class WithdrawalService {
       };
 
       if (!recRes.ok || !recJson.status || !recJson.data?.recipient_code) {
-        throw new UnprocessableEntityException(
-          recJson.message ?? 'Paystack could not create transfer recipient.',
+        const reason =
+          recJson.message ?? 'Paystack could not create transfer recipient.';
+        await this.failClaimedWithdrawal(
+          merchantId,
+          withdrawalId,
+          Number(wd.amount),
+          reason,
         );
+        throw new UnprocessableEntityException(reason);
       }
 
       recipientCode = recJson.data.recipient_code;
@@ -526,20 +554,12 @@ export class WithdrawalService {
     if (!tfRes.ok || !tfJson.status || !tfJson.data?.transfer_code) {
       this.logger.error(`Paystack transfer failed: ${JSON.stringify(tfJson)}`);
       const reason = tfJson.message ?? 'Paystack transfer initiation failed';
-      await this.restoreBalanceAfterFailure(
+      await this.failClaimedWithdrawal(
         merchantId,
         withdrawalId,
         Number(wd.amount),
         reason,
       );
-      await this.supabase.db
-        .from('merchant_withdrawals')
-        .update({
-          status: 'failed',
-          failure_reason: reason,
-          processed_at: new Date().toISOString(),
-        })
-        .eq('id', withdrawalId);
       throw new UnprocessableEntityException(
         tfJson.message ?? 'Paystack transfer failed — balance restored.',
       );
@@ -572,6 +592,28 @@ export class WithdrawalService {
       paystack_reference: tfJson.data.reference ?? reference,
       status: 'processing',
     };
+  }
+
+  private async failClaimedWithdrawal(
+    merchantId: string,
+    withdrawalId: string,
+    amount: number,
+    reason: string,
+  ): Promise<void> {
+    await this.restoreBalanceAfterFailure(
+      merchantId,
+      withdrawalId,
+      amount,
+      reason,
+    );
+    await this.supabase.db
+      .from('merchant_withdrawals')
+      .update({
+        status: 'failed',
+        failure_reason: reason,
+        processed_at: new Date().toISOString(),
+      })
+      .eq('id', withdrawalId);
   }
 
   async listWithdrawals(

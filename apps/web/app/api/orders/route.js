@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/admin';
+import { createClient as createServerSupabaseClient } from '@/lib/supabase/server';
 import { sendEmail, generateOrderConfirmationTemplate } from '@/lib/email';
 import { scanNewOrderForFraud } from '@/lib/orderFraudScan';
 
@@ -66,10 +67,15 @@ export async function POST(request) {
       address,
       phoneNumber,
       email,
-      userId,
       paystackReference,
       promoCode: promoCodeRaw,
     } = body;
+
+    const supabaseServer = await createServerSupabaseClient();
+    const {
+      data: { user },
+    } = await supabaseServer.auth.getUser();
+    const serverUserId = user?.id ?? null;
 
     if (!Array.isArray(items) || items.length === 0) {
       return NextResponse.json({ error: 'Cart is empty' }, { status: 400 });
@@ -180,7 +186,7 @@ export async function POST(request) {
     const { data: order, error: orderError } = await supabaseAdmin
       .from('orders')
       .insert({
-        user_id: userId || null,
+        user_id: serverUserId,
         status: 'confirmed',
         type: 'delivery',
         merchant_id: merchantId,
@@ -199,7 +205,19 @@ export async function POST(request) {
       .select('id')
       .single();
 
-    if (orderError) throw orderError;
+    if (orderError) {
+      if (orderError.code === '23505') {
+        const { data: duplicate } = await supabaseAdmin
+          .from('orders')
+          .select('id')
+          .eq('paystack_reference', reference)
+          .maybeSingle();
+        if (duplicate) {
+          return NextResponse.json({ reference, orderId: duplicate.id, duplicate: true });
+        }
+      }
+      throw orderError;
+    }
 
     const orderItems = items.map((item) => {
       const row = byId[item.id];
@@ -221,7 +239,7 @@ export async function POST(request) {
 
     void scanNewOrderForFraud(supabaseAdmin, {
       orderId: order.id,
-      userId: userId || null,
+      userId: serverUserId,
       merchantId,
       total,
     });
