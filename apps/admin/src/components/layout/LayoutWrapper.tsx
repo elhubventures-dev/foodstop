@@ -34,7 +34,7 @@ export const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
 
     void checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (pathname?.startsWith('/merchant')) return;
       if (event === 'SIGNED_OUT') {
         setIsAuthenticated(false);

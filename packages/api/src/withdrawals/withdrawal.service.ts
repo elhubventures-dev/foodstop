@@ -525,12 +525,21 @@ export class WithdrawalService {
 
     if (!tfRes.ok || !tfJson.status || !tfJson.data?.transfer_code) {
       this.logger.error(`Paystack transfer failed: ${JSON.stringify(tfJson)}`);
+      const reason = tfJson.message ?? 'Paystack transfer initiation failed';
       await this.restoreBalanceAfterFailure(
         merchantId,
         withdrawalId,
         Number(wd.amount),
-        tfJson.message ?? 'Paystack transfer initiation failed',
+        reason,
       );
+      await this.supabase.db
+        .from('merchant_withdrawals')
+        .update({
+          status: 'failed',
+          failure_reason: reason,
+          processed_at: new Date().toISOString(),
+        })
+        .eq('id', withdrawalId);
       throw new UnprocessableEntityException(
         tfJson.message ?? 'Paystack transfer failed — balance restored.',
       );
@@ -662,6 +671,13 @@ export class WithdrawalService {
       return;
     }
 
+    await this.restoreBalanceAfterFailure(
+      wd.merchant_id as string,
+      wd.id as string,
+      Number(wd.amount),
+      params.reason,
+    );
+
     await this.supabase.db
       .from('merchant_withdrawals')
       .update({
@@ -670,13 +686,6 @@ export class WithdrawalService {
         processed_at: new Date().toISOString(),
       })
       .eq('id', wd.id);
-
-    await this.restoreBalanceAfterFailure(
-      wd.merchant_id as string,
-      wd.id as string,
-      Number(wd.amount),
-      params.reason,
-    );
 
     await this.notifications.notify(wd.merchant_id as string, {
       type: 'withdrawal_failed',

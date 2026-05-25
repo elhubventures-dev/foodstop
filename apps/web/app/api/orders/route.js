@@ -18,6 +18,46 @@ function defaultDeliveryFee(subtotal) {
 
 const MONEY_TOLERANCE = 0.05;
 
+async function verifyPaystackPayment(reference, expectedAmountKobo) {
+  const secret = process.env.PAYSTACK_SECRET_KEY;
+  if (!secret) {
+    return {
+      error: 'Payment verification is not configured.',
+      status: 500,
+    };
+  }
+
+  const res = await fetch(
+    `https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`,
+    {
+      headers: {
+        Authorization: `Bearer ${secret}`,
+      },
+      cache: 'no-store',
+    },
+  );
+
+  const json = await res.json().catch(() => null);
+  const data = json?.data;
+  if (!res.ok || json?.status !== true || data?.status !== 'success') {
+    return {
+      error: json?.message || 'Payment has not been verified by Paystack.',
+      status: 402,
+    };
+  }
+
+  if (data.currency !== 'NGN') {
+    return { error: 'Unsupported payment currency.', status: 400 };
+  }
+
+  const paidAmountKobo = Number(data.amount);
+  if (paidAmountKobo !== expectedAmountKobo) {
+    return { error: 'Payment amount does not match order total.', status: 400 };
+  }
+
+  return { data };
+}
+
 export async function POST(request) {
   try {
     const body = await request.json();
@@ -35,8 +75,11 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Cart is empty' }, { status: 400 });
     }
 
-    const reference =
-      paystackReference || `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    if (typeof paystackReference !== 'string' || !paystackReference.trim()) {
+      return NextResponse.json({ error: 'Payment reference is required' }, { status: 400 });
+    }
+
+    const reference = paystackReference.trim();
 
     const ids = [...new Set(items.map((i) => i.id).filter(isUUID))];
     if (ids.length === 0) {
@@ -117,12 +160,28 @@ export async function POST(request) {
     }
 
     const tax = 0;
+    const expectedAmountKobo = Math.round(total * 100);
+    const payment = await verifyPaystackPayment(reference, expectedAmountKobo);
+    if (payment.error) {
+      return NextResponse.json({ error: payment.error }, { status: payment.status });
+    }
+
+    const { data: existingOrder, error: existingOrderError } = await supabaseAdmin
+      .from('orders')
+      .select('id')
+      .eq('paystack_reference', reference)
+      .maybeSingle();
+
+    if (existingOrderError) throw existingOrderError;
+    if (existingOrder) {
+      return NextResponse.json({ reference, orderId: existingOrder.id, duplicate: true });
+    }
 
     const { data: order, error: orderError } = await supabaseAdmin
       .from('orders')
       .insert({
         user_id: userId || null,
-        status: 'pending',
+        status: 'confirmed',
         type: 'delivery',
         merchant_id: merchantId,
         subtotal: serverSubtotal,
@@ -134,6 +193,8 @@ export async function POST(request) {
         applied_promotion_id,
         delivery_address: { address, phone: phoneNumber, email },
         paystack_reference: reference,
+        paid_at: new Date().toISOString(),
+        payment_channel: payment.data.channel ?? null,
       })
       .select('id')
       .single();

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Settings, Bell, Shield, CreditCard, Store, Globe, Save } from 'lucide-react';
+import { Bell, Shield, CreditCard, Store, Globe, Save } from 'lucide-react';
 
 export default function SettingsPage() {
   return (

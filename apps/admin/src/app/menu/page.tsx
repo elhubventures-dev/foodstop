@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   Plus, 
   Search, 
@@ -16,7 +16,7 @@ import {
 
 export default function MenuManagementPage() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [items, setItems] = useState([
+  const [items] = useState([
     { id: '101', name: 'Party Jollof Rice', category: 'Rice Dishes', price: 3500, status: 'available', image: '/jollof.jpg' },
     { id: '102', name: 'Pounded Yam & Egusi', category: 'Swallow', price: 4200, status: 'available', image: '/egusi.jpg' },
     { id: '103', name: 'Beef Suya', category: 'Grills', price: 3000, status: 'out_of_stock', image: '/suya.jpg' },
@@ -28,7 +28,7 @@ export default function MenuManagementPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <div>
           <h2 style={{ fontSize: '1.75rem', fontWeight: 'bold' }}>Menu Management</h2>
-          <p style={{ color: 'var(--color-text-secondary)' }}>Create, edit, and manage your restaurant's food offerings.</p>
+          <p style={{ color: 'var(--color-text-secondary)' }}>Create, edit, and manage your restaurant&apos;s food offerings.</p>
         </div>
         <button className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <Plus size={20} />

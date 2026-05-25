@@ -3,8 +3,18 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@chopfast/shared';
 
+export type OrderSummary = {
+  id: string;
+  status: string;
+  customer_name?: string | null;
+  customer_email?: string | null;
+  item_count?: number | null;
+  total: number;
+  created_at: string;
+};
+
 export const useOrders = () => {
-  const [orders, setOrders] = useState<any[]>([]);
+  const [orders, setOrders] = useState<OrderSummary[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -38,11 +48,12 @@ export const useOrders = () => {
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'orders' },
         (payload) => {
-          setOrders((current) => [payload.new, ...current]);
+          const order = payload.new as OrderSummary;
+          setOrders((current) => [order, ...current]);
 
           if (Notification.permission === 'granted') {
             new Notification('New Food Order!', {
-              body: `Order ${payload.new.id} has just been placed.`,
+              body: `Order ${order.id} has just been placed.`,
               icon: '/logo.png',
             });
           }

@@ -4,26 +4,34 @@ import React, { useEffect, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   ArrowLeft, 
-  MapPin, 
-  Phone, 
   User, 
-  Clock, 
   CreditCard,
-  CheckCircle2,
-  AlertCircle
+  CheckCircle2
 } from 'lucide-react';
 import { supabase } from '@chopfast/shared';
+
+type OrderDetail = {
+  id: string;
+  status: string;
+  created_at: string;
+  customer_name?: string | null;
+  customer_phone?: string | null;
+  delivery_address?: { street?: string; address?: string } | null;
+  subtotal?: number | null;
+  delivery_fee?: number | null;
+  total?: number | null;
+};
 
 export default function OrderDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const router = useRouter();
-  const [order, setOrder] = useState<any>(null);
+  const [order, setOrder] = useState<OrderDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     const fetchOrder = async () => {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('orders')
         .select('*')
         .eq('id', resolvedParams.id)
@@ -44,7 +52,7 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
       .eq('id', resolvedParams.id);
       
     if (!error) {
-      setOrder({ ...order, status: newStatus });
+      setOrder((current) => current ? { ...current, status: newStatus } : current);
     }
     setUpdating(false);
   };

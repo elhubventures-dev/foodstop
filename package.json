@@ -7,23 +7,34 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace=@chopfast/web",
+    "dev": "npm run dev:web",
+    "dev:web": "npm run dev --workspace=@chopfast/web",
+    "dev:admin": "npm run dev --workspace=@chopfast/admin",
     "dev:api": "npm run start:dev --workspace=@chopfast/api",
-    "build": "npm run build --workspace=@chopfast/admin",
+    "build": "npm run build:admin",
+    "build:web": "npm run build --workspace=@chopfast/web",
+    "build:admin": "npm run build --workspace=@chopfast/admin",
+    "build:api": "npm run build --workspace=@chopfast/api",
     "start": "npm run start --workspace=@chopfast/admin",
-    "lint": "npm run lint --workspace=@chopfast/web"
+    "lint": "npm run lint:web",
+    "lint:web": "npm run lint --workspace=@chopfast/web",
+    "lint:admin": "npm run lint --workspace=@chopfast/admin",
+    "test:api": "npm run test --workspace=@chopfast/api"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.99.3",
     "@swc/helpers": "^0.5.15",
     "lucide-react": "^0.577.0",
     "motion-utils": "^12.36.0",
-    "next": "16.2.4",
+    "next": "16.2.6",
     "nodemailer": "^8.0.4",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-hot-toast": "2.6.0",
     "react-paystack": "^6.0.0",
     "zustand": "^5.0.12"
+  },
+  "overrides": {
+    "postcss": "8.5.15"
   }
 }

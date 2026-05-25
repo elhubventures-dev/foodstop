@@ -4,15 +4,22 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '@chopfast/shared';
 import { User, Shield, ShieldCheck, Mail, Edit2, Save, X } from 'lucide-react';
 
+type StaffUser = {
+  id: string;
+  full_name?: string | null;
+  email?: string | null;
+  role?: string | null;
+};
+
 export default function StaffPage() {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<StaffUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editRole, setEditRole] = useState('');
 
   const fetchUsers = async () => {
     setLoading(true);
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('profiles')
       .select('*')
       .order('full_name');
@@ -43,6 +50,8 @@ export default function StaffPage() {
         <h2 style={{ fontSize: '1.75rem', fontWeight: 'bold' }}>Staff & Role Management</h2>
         <p style={{ color: 'var(--color-text-secondary)' }}>Manage access levels for your team members and customers.</p>
       </div>
+
+      {loading && <p style={{ color: 'var(--color-text-secondary)' }}>Loading staff...</p>}
 
       <div className="card" style={{ padding: '0' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>

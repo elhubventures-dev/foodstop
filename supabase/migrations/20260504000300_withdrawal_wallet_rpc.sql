@@ -46,18 +46,25 @@ CREATE OR REPLACE FUNCTION public.merchant_wallet_restore_failed_withdrawal(
 LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
+DECLARE
+  v_reversed INTEGER;
 BEGIN
-  UPDATE public.merchant_wallets
-  SET available_balance = available_balance + p_amount,
-      total_withdrawn   = GREATEST(0, total_withdrawn - p_amount),
-      updated_at        = NOW()
-  WHERE merchant_id = p_merchant_id;
-
   UPDATE public.merchant_wallet_transactions
   SET status = 'reversed'
   WHERE withdrawal_id = p_withdrawal_id
     AND type = 'withdrawal'
     AND status = 'pending';
+
+  GET DIAGNOSTICS v_reversed = ROW_COUNT;
+  IF v_reversed = 0 THEN
+    RETURN;
+  END IF;
+
+  UPDATE public.merchant_wallets
+  SET available_balance = available_balance + p_amount,
+      total_withdrawn   = GREATEST(0, total_withdrawn - p_amount),
+      updated_at        = NOW()
+  WHERE merchant_id = p_merchant_id;
 
   INSERT INTO public.merchant_wallet_transactions (
     merchant_id, type, amount, commission_amount, net_amount,

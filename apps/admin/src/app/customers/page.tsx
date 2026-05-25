@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Users, Search, Mail, Phone, MapPin, MoreHorizontal, UserPlus } from 'lucide-react';
+import { Search, Mail, Phone, MapPin, MoreHorizontal, UserPlus } from 'lucide-react';
 
 export default function CustomersPage() {
   const customers = [

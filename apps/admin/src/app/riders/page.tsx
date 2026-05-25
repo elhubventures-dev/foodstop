@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Truck, MapPin, Star, Clock, Phone, MoreVertical, Plus } from 'lucide-react';
+import { Truck, MapPin, Star, Phone, MoreVertical, Plus } from 'lucide-react';
 
 export default function RidersPage() {
   const riders = [

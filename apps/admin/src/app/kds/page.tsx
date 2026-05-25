@@ -1,17 +1,21 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { 
-  Clock, 
   CheckCircle2, 
-  AlertCircle,
   Timer,
-  ChefHat,
-  ChevronRight
+  ChefHat
 } from 'lucide-react';
 import { supabase } from '@chopfast/shared';
 
+type KitchenOrder = {
+  id: string;
+  created_at: string;
+  customer_name?: string | null;
+  status: 'pending' | 'preparing' | 'ready' | string;
+};
+
 export default function KDSPage() {
-  const [orders, setOrders] = useState<any[]>([]);
+  const [orders, setOrders] = useState<KitchenOrder[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

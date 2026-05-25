@@ -177,7 +177,7 @@ export default function VendorRegisterPage() {
     },
   });
 
-  const reviewPayload = useMemo(() => buildPayload(), [step1, step2, step3, step4, cuisine_types]);
+  const reviewPayload = buildPayload();
 
   const validateStep0 = () => {
     if (step1.business_name.length < 2) {

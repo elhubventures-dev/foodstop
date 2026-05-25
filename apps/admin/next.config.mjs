@@ -1,11 +1,11 @@
-import type { NextConfig } from "next";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const monorepoRoot = path.resolve(__dirname, "../..");
 
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   transpilePackages: ["@chopfast/shared", "@chopfast/ui"],
   turbopack: {
     // Workspace packages (source in repo)

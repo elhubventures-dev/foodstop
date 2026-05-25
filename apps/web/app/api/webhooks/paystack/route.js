@@ -25,9 +25,35 @@ export async function POST(request) {
     
     if (event.event === 'charge.success') {
       const reference = event.data.reference;
-      const amountPaid = event.data.amount / 100; // Convert from kobo to NGN
+      const amountPaidKobo = Number(event.data.amount);
       const channel = event.data.channel;
-      
+
+      const { data: existingOrder, error: existingError } = await supabaseAdmin
+        .from('orders')
+        .select('id, total, status')
+        .eq('paystack_reference', reference)
+        .maybeSingle();
+
+      if (existingError) {
+        console.error('Failed to fetch order for webhook:', existingError);
+        return NextResponse.json({ error: 'Failed to fetch order' }, { status: 500 });
+      }
+
+      if (!existingOrder) {
+        console.warn(`Paystack webhook received before order exists: ${reference}`);
+        return NextResponse.json({ received: true, pendingOrder: true });
+      }
+
+      const expectedAmountKobo = Math.round(Number(existingOrder.total) * 100);
+      if (amountPaidKobo !== expectedAmountKobo) {
+        console.error(
+          `Paystack amount mismatch for ${reference}: paid=${amountPaidKobo} expected=${expectedAmountKobo}`,
+        );
+        return NextResponse.json({ error: 'Payment amount mismatch' }, { status: 400 });
+      }
+
+      const wasAlreadyConfirmed = existingOrder.status === 'confirmed';
+
       // Update order status in Supabase
       const { data: order, error } = await supabaseAdmin
         .from('orders')
@@ -36,7 +62,7 @@ export async function POST(request) {
           paid_at: new Date().toISOString(),
           payment_channel: channel 
         })
-        .eq('paystack_reference', reference)
+        .eq('id', existingOrder.id)
         .select()
         .single();
         
@@ -50,13 +76,13 @@ export async function POST(request) {
         .from('orders')
         .select(`
           *,
-          profiles:user_id (full_name),
+          profiles:user_id (full_name, email),
           order_items (*)
         `)
         .eq('id', order.id)
         .single();
 
-      if (fullOrder) {
+      if (fullOrder && !wasAlreadyConfirmed) {
         const customerEmail = fullOrder.delivery_address?.email || fullOrder.profiles?.email;
         
         // Send Confirmation to Customer

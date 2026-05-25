@@ -1,5 +1,6 @@
 'use client';
 
+/* eslint-disable @next/next/no-img-element */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Loader2, MapPin, Star, Share2, Heart } from 'lucide-react';
@@ -301,7 +302,6 @@ export default function MerchantStorefront({ slug }) {
                         <article key={item.id} className="storefront-item-card">
                           <div className="storefront-item-img-wrap">
                             {item.image_url ? (
-                              // eslint-disable-next-line @next/next/no-img-element
                               <img src={item.image_url} alt="" className="storefront-item-img" />
                             ) : (
                               <div className="storefront-item-img storefront-item-img--empty" />
@@ -331,7 +331,6 @@ export default function MerchantStorefront({ slug }) {
                   <article key={item.id} className="storefront-item-card">
                     <div className="storefront-item-img-wrap">
                       {item.image_url ? (
-                        // eslint-disable-next-line @next/next/no-img-element
                         <img src={item.image_url} alt="" className="storefront-item-img" />
                       ) : (
                         <div className="storefront-item-img storefront-item-img--empty" />
