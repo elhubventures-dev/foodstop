@@ -2,5 +2,5 @@
   "version": 2,
   "framework": "nextjs",
   "installCommand": "cd ../.. && npm ci",
-  "buildCommand": "cd ../.. && npm run build --workspace=@chopfast/web"
+  "buildCommand": "cd ../.. && npm run build --workspace=@chopfast/admin -- --webpack"
 }
